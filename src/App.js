@@ -56,6 +56,8 @@ function App() {
 
   const [topAppbarBackgroundColor, setTopAppbarBackgroundColor] = useState('#01579b')
 
+  const [items, setItems] = useState(cards)
+
   const airhorn = new Audio("airhorn.mp3")
 
   const confetti = useRef(undefined)
@@ -92,9 +94,21 @@ function App() {
   }, [])
 
   // get random item from array of items
+  // remove cards from deck after showing them to seem more random.
+  // start new after all cards have been shown.
   function drawNewCard(){
-    const newCard = cards[Math.floor(Math.random() * cards.length)]
+
+    // remove current item
+    let tItems = items.filter(item => !(item.item === currentCard.item))
+
+    // if no more items -> reimport all items
+    if(tItems.length === 0){
+      tItems = cards
+    }
+
+    const newCard = tItems[Math.floor(Math.random() * tItems.length)]
     setCurrentCard(newCard)
+    setItems(tItems)
 
   }
 
@@ -104,6 +118,7 @@ function App() {
       confetti.current.rewardMe()
       setGameRunning(false)
       setRemainingTime(60)
+      drawNewCard()
     }
     setOverlayText("")
     setOverlayColor(`rgba(0,0,0,0)`)
