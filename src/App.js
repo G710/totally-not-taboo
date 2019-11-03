@@ -9,7 +9,9 @@ import Fab from '@material-ui/core/Fab';
 import VolumeUpIcon from '@material-ui/icons/VolumeUp';
 
 import Reward from 'react-rewards'
-import Draggable from 'react-draggable'; // The default
+import Card from './components/Card';
+
+import cards from './_cards'
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -28,7 +30,8 @@ const useStyles = makeStyles(theme => ({
   appBar: {
     top: 'auto',
     bottom: 0,
-    position: 'fixed'
+    position: 'fixed',
+    backgroundColor: '#01579b'
   },
   fabButton: {
     position: 'absolute',
@@ -43,54 +46,79 @@ const useStyles = makeStyles(theme => ({
 function App() {
   const classes = useStyles();
 
-  const [isFlipped, setisFlipped] = useState(false)
+  const [currentCard, setCurrentCard] = useState({item: '', forbidden_words: []})
+
+  const [gameRunning, setGameRunning] = useState(false)
   const [remainingTime, setRemainingTime] = useState(60) // in seconds
 
   const [overlayColor, setOverlayColor] = useState('rgba(255, 255, 255, 0.0)')
   const [overlayText, setOverlayText] = useState('')
 
+  const [topAppbarBackgroundColor, setTopAppbarBackgroundColor] = useState('#01579b')
+
   const airhorn = new Audio("airhorn.mp3")
+
   const confetti = useRef(undefined)
 
+  // update game timer
   useEffect(() => {
 
-    if(!isFlipped)
+    if (!gameRunning)
       return;
 
-    if (!remainingTime)
+    if (!remainingTime){
+      playAirhorn()
       return;
-
-    const intervalId = setInterval(()=> {
+    }
+    const intervalId = setInterval(() => {
       setRemainingTime(remainingTime - 1)
+      
     }, 1000)
+
+    if(remainingTime < 10){
+      setTopAppbarBackgroundColor('#d84315')
+    }else{
+      setTopAppbarBackgroundColor('#01579b')
+    }
 
     return () => clearInterval(intervalId)
 
-  }, [remainingTime, isFlipped])
+  }, [remainingTime, gameRunning])
 
+  // initial startup
   useEffect(() => {
     confetti.current.rewardMe()
+    drawNewCard()
   }, [])
 
-  function onDragStart(e, position){
-    console.log(e, position)
+  // get random item from array of items
+  function drawNewCard(){
+    const newCard = cards[Math.floor(Math.random() * cards.length)]
+    setCurrentCard(newCard)
+
   }
 
-  function onDragStop(e, position){
-    console.log(e, position)
-
-    // user is selecting an answer
-    if(position.lastX < -100 || position.lastX > 100){
-      confetti.current.rewardMe()    
-      setisFlipped(false)
+  // reset game if card is swiped to left or right
+  function onCardSwiped(swipeFinished) {
+    if (swipeFinished) {
+      confetti.current.rewardMe()
+      setGameRunning(false)
       setRemainingTime(60)
-    }  
+    }
     setOverlayText("")
     setOverlayColor(`rgba(0,0,0,0)`)
-
   }
 
-  function onDrag(e, position){
+  function playAirhorn(){
+    if (airhorn.paused) {
+      airhorn.play()
+    } else {
+      airhorn.currentTime = 0
+    }
+  }
+
+  // update overlay during swipe
+  function onCardMoved(xPosition) {
 
     /**
      * calculate the new color
@@ -98,23 +126,23 @@ function App() {
      * positive x = green
      * negative x = red
      */
-
-     if(position.lastX > 0){
-       setOverlayColor(`rgba(45,128,10,${position.lastX / 150 - 0.4})`)
-       setOverlayText("SOLVED")
-     }
-     if(position.lastX < 0){
-      setOverlayColor(`rgba(200,20,20,${position.lastX / -150 - 0.4})`)
+    if (xPosition > 0) {
+      setOverlayColor(`rgba(45,128,10,${xPosition / 150 - 0.4})`)
+      setOverlayText("SOLVED")
+    }
+    if (xPosition < 0) {
+      setOverlayColor(`rgba(200,20,20,${xPosition / -150 - 0.4})`)
       setOverlayText("FAILED")
     }
   }
 
+
   return (
     <div>
-      <AppBar className={classes.appbar} >
+      <AppBar className={classes.appbar} style={{backgroundColor: topAppbarBackgroundColor}} >
         <Toolbar>
           <Typography variant="h6" className={classes.title}>
-            {parseInt(remainingTime / 60) }:{ String(remainingTime % 60).padStart(2, "0")}
+            {parseInt(remainingTime / 60)}:{String(remainingTime % 60).padStart(2, "0")}
           </Typography>
         </Toolbar>
       </AppBar>
@@ -130,56 +158,28 @@ function App() {
         zIndex: 1001,
         pointerEvents: 'none'
       }}>
-        <Typography variant="h3" style={{textAlign: 'center', paddingTop: '40vh', color: 'white'}}>
+        <Typography variant="h3" style={{ textAlign: 'center', paddingTop: '40vh', color: 'white' }}>
           {overlayText}
         </Typography>
       </div>
 
-      <Draggable
-        position={{x: 0, y: 0}}
-        bounds={{top: -100, left: -200, right: 200, bottom: 0}}
-        onStart={onDragStart}
-        onStop={onDragStop}
-        onDrag={onDrag}
-        >
-        <div 
-          onClick={() => setisFlipped(true)} 
-          className="flip-card center"
-          style={{marginTop: '10vh'}}
-          >
-            
-          <div className={isFlipped ? "flip-card-inner-rotated" : "flip-card-inner"}>
-            <div className="flip-card-front">
-            <Reward type="confetti" ref={(r) => confetti.current = r} config={{
-              zIndex: '1000',
-              lifetime: '200',
-              elementCount: '80',
-              elementSize: '15',
-              startVelocity: '15',
-              spread: '90'
-            }}>
-              <div>{/** this div is only here to fulfill the required children prop for Reward */}</div>                
-            </Reward>
-            <img src="card-back.jpg" alt="Avatar" style={{ width: '100%', height: '100%' }} />
-            </div>
-            <div className="flip-card-back">
-              <Typography variant="h3" gutterBottom style={{ paddingTop: '10%' }}>
-                Gewürzgurke
-                </Typography>
-              {
-                ['Essen', 'Oma und Opa', 'Angebot', 'Snack'].map(forbidden_word => {
-                  return (
-                    <Typography key={forbidden_word} variant="h5" style={{ paddingTop: '10%', color: 'lightgray' }}>
-                      {forbidden_word}
-                    </Typography>
-                  )
-                })
-              }
-            </div>
-          </div>
-        </div>
+      <Reward type="confetti" ref={(r) => confetti.current = r} config={{
+        angle: "0",
+        zIndex: '1000',
+        lifetime: '200',
+        elementCount: '80',
+        elementSize: '15',
+        startVelocity: '20',
+        spread: '90'
+      }}>
+        <Card
+          item={currentCard}
+          isFlipped={gameRunning}
+          onCardSwiped={onCardSwiped}
+          onCardMoved={onCardMoved}
+          startGame={() => setGameRunning(true)} />
+      </Reward>
 
-      </Draggable>
 
       <div className="center">
         <Typography variant="h6">
@@ -191,13 +191,9 @@ function App() {
           <IconButton edge="start" color="inherit" aria-label="open drawer">
             <MenuIcon />
           </IconButton>
-          
+
           <Fab size="large" color="secondary" aria-label="add" className={classes.fabButton} onClick={() => {
-            if (airhorn.paused) {
-              airhorn.play()
-            } else {
-              airhorn.currentTime = 0
-            }
+            playAirhorn();
           }}>
             <VolumeUpIcon />
           </Fab>
