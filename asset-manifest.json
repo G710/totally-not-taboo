@@ -1,21 +1,21 @@
 {
   "files": {
-    "main.css": "/static/css/main.5fa24813.chunk.css",
-    "main.js": "/static/js/main.2e3ab775.chunk.js",
-    "main.js.map": "/static/js/main.2e3ab775.chunk.js.map",
-    "runtime-main.js": "/static/js/runtime-main.6048427c.js",
-    "runtime-main.js.map": "/static/js/runtime-main.6048427c.js.map",
-    "static/js/2.12837923.chunk.js": "/static/js/2.12837923.chunk.js",
-    "static/js/2.12837923.chunk.js.map": "/static/js/2.12837923.chunk.js.map",
-    "index.html": "/index.html",
-    "precache-manifest.5413b8ff74567db088cd880aa0dca854.js": "/precache-manifest.5413b8ff74567db088cd880aa0dca854.js",
-    "service-worker.js": "/service-worker.js",
-    "static/css/main.5fa24813.chunk.css.map": "/static/css/main.5fa24813.chunk.css.map"
+    "main.css": "/totally-not-taboo/static/css/main.5fa24813.chunk.css",
+    "main.js": "/totally-not-taboo/static/js/main.0a707826.chunk.js",
+    "main.js.map": "/totally-not-taboo/static/js/main.0a707826.chunk.js.map",
+    "runtime-main.js": "/totally-not-taboo/static/js/runtime-main.9824dbae.js",
+    "runtime-main.js.map": "/totally-not-taboo/static/js/runtime-main.9824dbae.js.map",
+    "static/js/2.12837923.chunk.js": "/totally-not-taboo/static/js/2.12837923.chunk.js",
+    "static/js/2.12837923.chunk.js.map": "/totally-not-taboo/static/js/2.12837923.chunk.js.map",
+    "index.html": "/totally-not-taboo/index.html",
+    "precache-manifest.34edf2263bd9826ced61a124d4af30b9.js": "/totally-not-taboo/precache-manifest.34edf2263bd9826ced61a124d4af30b9.js",
+    "service-worker.js": "/totally-not-taboo/service-worker.js",
+    "static/css/main.5fa24813.chunk.css.map": "/totally-not-taboo/static/css/main.5fa24813.chunk.css.map"
   },
   "entrypoints": [
-    "static/js/runtime-main.6048427c.js",
+    "static/js/runtime-main.9824dbae.js",
     "static/js/2.12837923.chunk.js",
     "static/css/main.5fa24813.chunk.css",
-    "static/js/main.2e3ab775.chunk.js"
+    "static/js/main.0a707826.chunk.js"
   ]
 }
